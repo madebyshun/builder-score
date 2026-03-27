@@ -93,8 +93,7 @@ export function ScoreCard({ score, onClose }: Props) {
 
               {/* Big score */}
               <div className="flex items-baseline gap-1 mb-1">
-                <span className="text-5xl font-bold text-white leading-none">{score.overall}</span>
-                <span className="text-[#4a90d9] text-lg">/100</span>
+                <span className="text-6xl font-bold text-white leading-none" style={{ textShadow: '0 0 30px #4a90d9aa' }}>{score.overall}</span>
               </div>
 
               {/* Tier badge */}
@@ -121,7 +120,7 @@ export function ScoreCard({ score, onClose }: Props) {
               <div className="mb-5">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-[#4a90d9] text-xs font-mono">Overall</span>
-                  <span className="text-white text-xs font-mono font-bold">{score.overall}/100</span>
+                  <span className="text-white text-xs font-mono font-bold">{score.overall}</span>
                 </div>
                 <div className="w-full h-2 bg-[#1a2540] rounded-full overflow-hidden">
                   <div className="h-full bg-[#4a90d9] rounded-full"
