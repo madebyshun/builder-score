@@ -97,12 +97,30 @@ export function ScoreCard({ score, onClose }: Props) {
             </div>
 
             {/* RIGHT 50% */}
-            <div style={{ width: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end', textAlign: 'right', paddingRight: '8px', height: '100%', paddingTop: '12px' }}>
+            <div style={{
+              width: '50%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              alignItems: 'flex-end',
+              paddingRight: '8px',
+              height: '100%',
+              paddingTop: '14px',
+              paddingBottom: '6px',
+            }}>
 
-              {/* User info — top */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexDirection: 'row-reverse' }}>
-                <div className="rounded-full overflow-hidden bg-[#1e2d4a]"
-                  style={{ width: '52px', height: '52px', border: `2px solid ${tierColor}`, flexShrink: 0 }}>
+              {/* ── User info ── */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexDirection: 'row-reverse' }}>
+                {/* Avatar */}
+                <div style={{
+                  width: '54px', height: '54px',
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  border: `2px solid ${tierColor}`,
+                  background: '#1e2d4a',
+                  flexShrink: 0,
+                  boxShadow: `0 0 12px ${tierColor}44`,
+                }}>
                   {score.avatar ? (
                     <img src={score.avatar} alt={score.handle}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -112,37 +130,54 @@ export function ScoreCard({ score, onClose }: Props) {
                     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>🟦</div>
                   )}
                 </div>
+                {/* Name + tier */}
                 <div style={{ textAlign: 'right' }}>
-                  <p className="font-bold font-mono" style={{ fontSize: '16px', color: '#ffffff', letterSpacing: '-0.5px' }}>@{score.handle}</p>
-                  <p className="font-mono" style={{ fontSize: '11px', color: '#a0aec0', marginTop: '1px' }}>Base Builder</p>
-                  <p className="font-mono" style={{ fontSize: '10px', color: tierColor, marginTop: '2px' }}>{tierEmoji} {score.tier}</p>
+                  <p style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.5px', fontFamily: 'inherit' }}>
+                    @{score.handle}
+                  </p>
+                  <p style={{ fontSize: '10px', color: '#4a5568', marginTop: '2px', letterSpacing: '1px', fontFamily: 'inherit' }}>
+                    BASE BUILDER
+                  </p>
+                  <div style={{
+                    display: 'inline-block',
+                    marginTop: '4px',
+                    fontSize: '10px',
+                    color: tierColor,
+                    border: `1px solid ${tierColor}`,
+                    borderRadius: '4px',
+                    padding: '1px 8px',
+                    background: `${tierColor}15`,
+                    fontFamily: 'inherit',
+                  }}>
+                    {tierEmoji} {score.tier}
+                  </div>
                 </div>
               </div>
 
-              {/* Metrics — bottom, compact — same as bot */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
+              {/* ── Metrics ── */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%' }}>
                 {bars.map(b => (
-                  <div key={b.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span className="font-mono" style={{ fontSize: '9px', color: '#4a5568', letterSpacing: '1px' }}>
+                  <div key={b.label} style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '9px', color: '#4a5568', letterSpacing: '1.5px', fontFamily: 'inherit' }}>
                       {b.label.toUpperCase()}
                     </span>
-                    <span className="font-bold font-mono" style={{ fontSize: '22px', color: b.color, letterSpacing: '-1px', lineHeight: 1 }}>
+                    <span style={{ fontSize: '24px', fontWeight: 700, color: b.color, letterSpacing: '-1px', lineHeight: 1, fontFamily: 'inherit' }}>
                       +{b.value}
                     </span>
                   </div>
                 ))}
                 {(sub.bankrBonus ?? 0) > 0 && (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span className="font-mono" style={{ fontSize: '9px', color: '#34d399', letterSpacing: '1px' }}>BANKR BONUS</span>
-                    <span className="font-bold font-mono" style={{ fontSize: '22px', color: '#34d399', letterSpacing: '-1px', lineHeight: 1 }}>+{sub.bankrBonus}</span>
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '9px', color: '#34d399', letterSpacing: '1.5px', fontFamily: 'inherit' }}>BANKR BONUS</span>
+                    <span style={{ fontSize: '24px', fontWeight: 700, color: '#34d399', letterSpacing: '-1px', lineHeight: 1, fontFamily: 'inherit' }}>+{sub.bankrBonus}</span>
                   </div>
                 )}
               </div>
 
-              {/* Summary 💡 — same as bot output */}
+              {/* ── Summary ── */}
               {score.summary && (
-                <div style={{ borderTop: '1px solid #1e2d4a', paddingTop: '8px' }}>
-                  <p className="font-mono" style={{ fontSize: '9px', color: '#4a5568', lineHeight: 1.6, textAlign: 'right' }}>
+                <div style={{ borderTop: '1px solid rgba(74,144,217,0.15)', paddingTop: '8px', width: '100%' }}>
+                  <p style={{ fontSize: '9px', color: '#4a5568', lineHeight: 1.7, textAlign: 'right', fontFamily: 'inherit' }}>
                     💡 {score.summary}
                   </p>
                 </div>
