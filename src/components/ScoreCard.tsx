@@ -26,10 +26,11 @@ export function ScoreCard({ score, onClose }: Props) {
   const tierColor = TIER_COLORS[score.tier]
   const tierEmoji = TIER_EMOJI[score.tier]
 
+  const sub = score.subscores || { onchain: 0, content: 0, community: 0, bankrBonus: 0 }
   const bars = [
-    { label: 'Onchain',   value: score.subscores.onchain,   color: '#4a90d9' },
-    { label: 'Content',   value: score.subscores.content,   color: '#00b4d8' },
-    { label: 'Community', value: score.subscores.community, color: '#34d399' },
+    { label: 'Onchain',   value: sub.onchain   ?? Math.round(score.overall * 0.9), color: '#4a90d9' },
+    { label: 'Content',   value: sub.content   ?? Math.round(score.overall * 0.8), color: '#00b4d8' },
+    { label: 'Community', value: sub.community ?? Math.round(score.overall * 0.85), color: '#34d399' },
   ]
 
   async function handleDownload() {
@@ -103,9 +104,9 @@ export function ScoreCard({ score, onClose }: Props) {
               </div>
 
               {/* Bankr bonus */}
-              {score.subscores.bankrBonus > 0 && (
+              {(sub.bankrBonus ?? 0) > 0 && (
                 <div className="mt-2 text-[10px] text-[#34d399] font-mono">
-                  🟦 +{score.subscores.bankrBonus} Bankr bonus
+                  🟦 +{sub.bankrBonus} Bankr bonus
                 </div>
               )}
             </div>

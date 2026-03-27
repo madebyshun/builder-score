@@ -38,7 +38,19 @@ export default function Home() {
     try {
       const res = await fetch(`/api/score?handle=${handle.replace('@', '')}`)
       const data = await res.json()
+      if (data.error) { alert(`Error: ${data.error}`); return }
+      // Ensure subscores exist
+      if (!data.subscores) {
+        data.subscores = {
+          onchain: Math.round((data.overall || 50) * 0.9),
+          content: Math.round((data.overall || 50) * 0.8),
+          community: Math.round((data.overall || 50) * 0.85),
+          bankrBonus: 0
+        }
+      }
       setScore(data)
+    } catch (e) {
+      alert('Failed to fetch score. Try again.')
     } finally {
       setLoading(false)
     }
