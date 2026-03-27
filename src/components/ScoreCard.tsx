@@ -119,7 +119,7 @@ export function ScoreCard({ score, onClose }: Props) {
                 </div>
               </div>
 
-              {/* Metrics — bottom, compact */}
+              {/* Metrics — bottom, compact — same as bot */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
                 {bars.map(b => (
                   <div key={b.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -138,6 +138,15 @@ export function ScoreCard({ score, onClose }: Props) {
                   </div>
                 )}
               </div>
+
+              {/* Summary 💡 — same as bot output */}
+              {score.summary && (
+                <div style={{ borderTop: '1px solid #1e2d4a', paddingTop: '8px' }}>
+                  <p className="font-mono" style={{ fontSize: '9px', color: '#4a5568', lineHeight: 1.6, textAlign: 'right' }}>
+                    💡 {score.summary}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
