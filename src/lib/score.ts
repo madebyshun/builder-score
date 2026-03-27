@@ -24,31 +24,12 @@ export const TIER_EMOJI: Record<BuilderScore['tier'], string> = {
   Legend:   '🏆',
 }
 
-// Mock score generator — replace with real API calls
+// Real score via Bankr Agent (same as bot)
 export async function fetchScore(handle: string): Promise<BuilderScore> {
-  // TODO: integrate real data sources:
-  // - Onchain: Basescan API (tx count, contracts)
-  // - Content: X/Twitter API (tweets, engagement)
-  // - Community: bot DB (points, referrals, projects)
-  // - Bankr: Bankr agent profiles API
+  const h = handle.replace('@', '')
 
-  const seed = handle.length * 7 + handle.charCodeAt(0)
-  const onchain  = Math.min(100, 40 + (seed % 40))
-  const content  = Math.min(100, 30 + ((seed * 3) % 50))
-  const community = Math.min(100, 20 + ((seed * 7) % 60))
-  const bankr    = Math.min(100, 50 + ((seed * 2) % 40))
-  const overall  = Math.round((onchain * 0.35 + content * 0.25 + community * 0.25 + bankr * 0.15))
-
-  return {
-    handle,
-    overall,
-    subscores: { onchain, content, community, bankr, bankrBonus: seed % 3 === 0 },
-    tier: getTier(overall),
-    points: seed * 13 % 2000,
-    streak: seed % 21,
-    earned: (seed * 13 % 2000) * 10000,
-    projects: seed % 8,
-    change7d: (seed % 20) - 10,
-    avatar: `https://unavatar.io/twitter/${handle}`,
-  }
+  // Call our API route which uses Bankr Agent
+  const res = await fetch(`/api/score?handle=${h}`)
+  if (!res.ok) throw new Error('Score fetch failed')
+  return res.json()
 }

@@ -5,15 +5,10 @@ export interface BuilderScore {
     onchain: number
     content: number
     community: number
-    bankr: number
-    bankrBonus: boolean
+    bankrBonus: number  // bonus pts, not a sub-score
   }
   tier: 'Explorer' | 'Builder' | 'Shipper' | 'Founder' | 'Legend'
-  points: number
-  streak: number
-  earned: number // $BLUEAGENT earned
-  projects: number
-  change7d: number // % change in 7 days
+  summary?: string
   avatar?: string
 }
 

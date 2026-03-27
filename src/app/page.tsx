@@ -90,21 +90,9 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Score Card */}
+        {/* Score Card Popup */}
         {score && (
-          <div className="flex justify-center mb-4">
-            <ScoreCard score={score} />
-          </div>
-        )}
-        {score && (
-          <div className="flex gap-3 justify-center">
-            <button className="text-xs border border-[#4a90d9] text-[#4a90d9] px-4 py-2 rounded-lg hover:bg-[#4a90d9] hover:text-white transition">
-              📥 Download Card
-            </button>
-            <button className="text-xs bg-[#0a0f1e] text-white px-4 py-2 rounded-lg hover:opacity-80 transition border border-[#1e2d4a]">
-              𝕏 Share to X
-            </button>
-          </div>
+          <ScoreCard score={score} onClose={() => setScore(null)} />
         )}
       </section>
 
