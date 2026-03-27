@@ -8,30 +8,17 @@ interface Props {
   onClose?: () => void
 }
 
-// Blue Agent color palette
-const C = {
-  bg:      '#ffffff',
-  frame:   '#c8d8e8',
-  titleBg: '#4a90d9',
-  body:    '#0a0f1e',
-  textMain:'#e2f0fb',
-  textBlue:'#4a90d9',
-  textCta: '#00b4d8',
-  green:   '#34d399',
-  muted:   '#334155',
-}
-
 export function ScoreCard({ score, onClose }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
   const tierColor = TIER_COLORS[score.tier]
   const tierEmoji = TIER_EMOJI[score.tier]
   const sub = score.subscores || { onchain: 0, content: 0, community: 0, bankrBonus: 0 }
 
-  const subItems = [
-    { label: 'Consistency',   value: sub.onchain   ?? Math.round(score.overall * 0.22), color: C.textBlue },
-    { label: 'Technical',     value: sub.content   ?? Math.round(score.overall * 0.20), color: C.textCta  },
-    { label: 'Builder focus', value: sub.community ?? Math.round(score.overall * 0.21), color: '#8b5cf6'  },
-    { label: 'Community',     value: Math.round((sub.community ?? score.overall) * 0.19), color: C.green  },
+  const bars = [
+    { label: 'Consistency',   value: sub.onchain   ?? Math.round(score.overall * 0.9),  color: '#4a90d9',  max: 25 },
+    { label: 'Technical',     value: sub.content   ?? Math.round(score.overall * 0.8),  color: '#00b4d8',  max: 25 },
+    { label: 'Builder focus', value: sub.community ?? Math.round(score.overall * 0.85), color: '#8b5cf6',  max: 25 },
+    { label: 'Community',     value: Math.round((sub.community ?? score.overall) * 0.85), color: '#34d399', max: 25 },
   ]
 
   async function handleDownload() {
@@ -39,7 +26,7 @@ export function ScoreCard({ score, onClose }: Props) {
       const { default: html2canvas } = await import('html2canvas')
       if (!cardRef.current) return
       const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: C.bg,
+        backgroundColor: '#060c1a',
         scale: 2,
         useCORS: true,
         allowTaint: true,
@@ -48,189 +35,147 @@ export function ScoreCard({ score, onClose }: Props) {
       link.download = `builder-score-${score.handle}.png`
       link.href = canvas.toDataURL('image/png')
       link.click()
-    } catch { alert('Download failed') }
+    } catch {
+      alert('Download failed. Try again.')
+    }
   }
 
   function handleShare() {
     const text = encodeURIComponent(
-      `My Builder Score on Base: ${score.overall} ${tierEmoji} ${score.tier}\n\nCheck yours → blueagent.xyz/score`
+      `My Builder Score on Base: ${score.overall} ${tierEmoji} ${score.tier}\n\nCheck yours 👇\nblueagent.xyz/score`
     )
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank')
   }
-
-  const mono = 'ui-monospace, "Courier New", monospace'
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
       onClick={e => { if (e.target === e.currentTarget) onClose?.() }}>
 
-      <div style={{ width: '100%', maxWidth: '720px' }}>
-
-        {/* ── Card ── 16:9 Mac OS Terminal */}
-        <div ref={cardRef} style={{
-          width: '100%',
-          aspectRatio: '16/9',
-          borderRadius: '14px',
-          overflow: 'hidden',
-          border: `1.5px solid ${C.frame}`,
-          boxShadow: '0 24px 64px rgba(74,144,217,0.18), 0 4px 16px rgba(0,0,0,0.12)',
-          background: C.bg,
-          display: 'flex',
-          flexDirection: 'column',
-          fontFamily: mono,
-        }}>
-
-          {/* Title bar */}
-          <div style={{
-            backgroundColor: C.titleBg,
-            padding: '10px 18px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            flexShrink: 0,
+      <div className="w-full max-w-4xl">
+        {/* Card — 1600x900 ratio = 16:9, rendered at ~800x450 */}
+        <div ref={cardRef}
+          className="relative w-full overflow-hidden rounded-2xl border border-[#1e2d4a]"
+          style={{
+            aspectRatio: '16/9',
+            background: 'linear-gradient(135deg, #060c1a 0%, #0a1428 60%, #060c1a 100%)',
           }}>
-            {['#ff5f57','#febc2e','#28c840'].map((c, i) => (
-              <div key={i} style={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: c }} />
-            ))}
-            <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: 11, marginLeft: 14, letterSpacing: 1 }}>
-              blue-agent ~ builder-score
-            </span>
+
+          {/* Background glow */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full opacity-10"
+              style={{ background: tierColor, filter: 'blur(80px)' }} />
+            <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-64 h-64 rounded-full opacity-5"
+              style={{ background: '#4a90d9', filter: 'blur(60px)' }} />
           </div>
 
-          {/* Terminal body */}
-          <div style={{
-            backgroundColor: C.body,
-            flex: 1,
-            display: 'flex',
-            padding: '20px 32px',
-            gap: '24px',
-          }}>
+          {/* Top bar */}
+          <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-6 py-3 border-b border-white/5">
+            <div className="flex items-center gap-1.5">
+              {['#ff5f57','#febc2e','#28c840'].map((c, i) => (
+                <div key={i} className="w-2 h-2 rounded-full" style={{ backgroundColor: c }} />
+              ))}
+              <span className="text-white/20 text-[9px] font-mono ml-2 tracking-widest">blue-agent ~ builder-score</span>
+            </div>
+            <span className="text-white/20 text-[9px] font-mono tracking-widest">blueagent.xyz</span>
+          </div>
 
-            {/* LEFT — Avatar + handle + score hero */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-              width: '160px',
-              gap: '10px',
-            }}>
-              {/* Prompt line */}
-              <span style={{ color: C.muted, fontSize: 10, alignSelf: 'flex-start' }}>▸ score @{score.handle}</span>
+          {/* Main content */}
+          <div className="absolute inset-0 flex items-center px-10 pt-8 pb-6 gap-10">
 
+            {/* LEFT — Avatar + handle + tier */}
+            <div className="flex flex-col items-center justify-center gap-3 flex-shrink-0">
               {/* Avatar */}
-              <div style={{
-                width: 64, height: 64,
-                borderRadius: '50%',
-                overflow: 'hidden',
-                border: `2px solid ${C.textBlue}`,
-                background: '#1e2d4a',
-                flexShrink: 0,
-              }}>
-                {score.avatar
-                  ? <img src={score.avatar} alt="" crossOrigin="anonymous"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
-                  : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>🟦</div>
-                }
+              <div className="rounded-full overflow-hidden bg-[#1e2d4a] flex-shrink-0"
+                style={{
+                  width: '90px', height: '90px',
+                  border: `2.5px solid ${tierColor}`,
+                  boxShadow: `0 0 20px ${tierColor}44`
+                }}>
+                {score.avatar ? (
+                  <img src={score.avatar} alt={score.handle}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    crossOrigin="anonymous"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px' }}>🟦</div>
+                )}
               </div>
 
-              {/* Score hero */}
-              <div style={{
-                fontSize: 72,
-                fontWeight: 700,
-                color: C.textBlue,
-                lineHeight: 1,
-                letterSpacing: -3,
-                textShadow: `0 0 30px ${C.textBlue}88`,
-              }}>
-                {score.overall}
-              </div>
-
-              {/* Tier */}
-              <div style={{
-                fontSize: 11,
-                color: tierColor,
-                letterSpacing: 1,
-                border: `1px solid ${tierColor}`,
-                borderRadius: 4,
-                padding: '2px 8px',
-                backgroundColor: `${tierColor}15`,
-              }}>
-                {tierEmoji} {score.tier}
-              </div>
-
-              {/* Bankr bonus */}
-              {(sub.bankrBonus ?? 0) > 0 && (
-                <div style={{ fontSize: 9, color: C.green, letterSpacing: 0.5 }}>
-                  🟦 +{sub.bankrBonus} Bankr bonus
+              {/* Handle */}
+              <div className="text-center">
+                <p className="text-white font-bold font-mono" style={{ fontSize: '13px' }}>@{score.handle}</p>
+                <div className="flex items-center justify-center gap-1 mt-1">
+                  <span className="font-mono rounded-full px-2 py-0.5"
+                    style={{
+                      fontSize: '10px',
+                      color: tierColor,
+                      border: `1px solid ${tierColor}`,
+                      backgroundColor: `${tierColor}15`
+                    }}>
+                    {tierEmoji} {score.tier}
+                  </span>
                 </div>
-              )}
+                {(sub.bankrBonus ?? 0) > 0 && (
+                  <p className="text-[9px] font-mono mt-1" style={{ color: '#34d399' }}>🟦 +{sub.bankrBonus} bonus</p>
+                )}
+              </div>
             </div>
 
             {/* VERTICAL DIVIDER */}
-            <div style={{ width: 1, backgroundColor: '#1e2d4a', flexShrink: 0 }} />
+            <div className="flex-shrink-0 self-stretch" style={{ width: '1px', backgroundColor: '#1e2d4a' }} />
+
+            {/* CENTER — Big score */}
+            <div className="flex flex-col items-center justify-center flex-shrink-0">
+              <p className="font-mono mb-1" style={{ fontSize: '10px', color: '#334155', letterSpacing: '3px' }}>SCORE</p>
+              <div className="font-bold font-mono leading-none"
+                style={{
+                  fontSize: '120px',
+                  color: '#ffffff',
+                  textShadow: `0 0 40px ${tierColor}88, 0 0 80px ${tierColor}44`,
+                  lineHeight: 1,
+                }}>
+                {score.overall}
+              </div>
+            </div>
+
+            {/* VERTICAL DIVIDER */}
+            <div className="flex-shrink-0 self-stretch" style={{ width: '1px', backgroundColor: '#1e2d4a' }} />
 
             {/* RIGHT — Sub-scores + summary */}
-            <div style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              gap: '14px',
-            }}>
-              {subItems.map(item => (
-                <div key={item.label}>
-                  {/* Label row */}
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'baseline',
-                    marginBottom: 5,
-                  }}>
-                    <span style={{ fontSize: 10, color: C.muted, letterSpacing: 1 }}>▸ {item.label}</span>
-                    <span style={{ fontSize: 18, fontWeight: 700, color: item.color, letterSpacing: -0.5 }}>
-                      {item.value}
-                    </span>
+            <div className="flex-1 flex flex-col justify-center gap-3">
+              {bars.map(b => {
+                const pct = Math.round((b.value / b.max) * 100)
+                return (
+                  <div key={b.label} className="flex items-center gap-3">
+                    <span className="font-mono flex-shrink-0" style={{ fontSize: '10px', color: '#4a5568', width: '72px' }}>{b.label}</span>
+                    <div className="flex-1 rounded-full overflow-hidden" style={{ height: '4px', backgroundColor: '#1a2540' }}>
+                      <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: b.color }} />
+                    </div>
+                    <span className="font-mono font-bold flex-shrink-0" style={{ fontSize: '11px', color: b.color, width: '20px', textAlign: 'right' }}>{b.value}</span>
                   </div>
-                  {/* Bar */}
-                  <div style={{ height: 3, backgroundColor: '#1a2540', borderRadius: 2, overflow: 'hidden' }}>
-                    <div style={{
-                      height: '100%',
-                      width: `${Math.round(item.value / 25 * 100)}%`,
-                      backgroundColor: item.color,
-                      borderRadius: 2,
-                    }} />
-                  </div>
-                </div>
-              ))}
+                )
+              })}
 
               {/* Summary */}
               {score.summary && (
-                <div style={{ borderTop: '1px solid #1e2d4a', paddingTop: 10, marginTop: 4 }}>
-                  <span style={{ fontSize: 8, color: C.muted, lineHeight: 1.6 }}>
-                    → {score.summary}
-                  </span>
+                <div style={{ borderTop: '1px solid #1e2d4a', paddingTop: '10px', marginTop: '2px' }}>
+                  <p className="font-mono leading-relaxed" style={{ fontSize: '9px', color: '#4a5568' }}>
+                    {score.summary}
+                  </p>
                 </div>
               )}
-
-              {/* Footer CTA */}
-              <div style={{ fontSize: 9, color: C.textCta, marginTop: 'auto', letterSpacing: 0.5 }}>
-                → blueagent.xyz/score
-              </div>
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div style={{ display: 'flex', gap: 12, marginTop: 16, justifyContent: 'center' }}>
+        <div className="flex gap-3 mt-4 justify-center">
           <button onClick={handleDownload}
-            className="text-xs border border-[#4a90d9] text-[#4a90d9] px-5 py-2 rounded-lg hover:bg-[#4a90d9] hover:text-white transition font-mono">
+            className="flex items-center gap-2 text-xs border border-[#4a90d9] text-[#4a90d9] px-4 py-2 rounded-lg hover:bg-[#4a90d9] hover:text-white transition font-mono">
             📥 Download PNG
           </button>
           <button onClick={handleShare}
-            className="text-xs bg-black text-white px-5 py-2 rounded-lg hover:opacity-80 transition font-mono border border-[#333]">
+            className="flex items-center gap-2 text-xs bg-black text-white px-4 py-2 rounded-lg hover:opacity-80 transition font-mono border border-[#333]">
             𝕏 Share to X
           </button>
           {onClose && (
