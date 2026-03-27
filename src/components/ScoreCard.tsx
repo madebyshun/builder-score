@@ -80,10 +80,10 @@ export function ScoreCard({ score, onClose }: Props) {
           </div>
 
           {/* Main content — 1:1, no divider */}
-          <div className="absolute inset-0 flex items-center px-10 pt-8 pb-6">
+          <div className="absolute inset-0 flex items-start px-10 pt-8 pb-6">
 
-            {/* LEFT 50% + RIGHT 50% — vertically centered, score aligned with metrics */}
-            <div style={{ width: '50%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '8px' }}>
+            {/* LEFT 50% — score top-aligned */}
+            <div style={{ width: '50%', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start', paddingLeft: '8px' }}>
               <div className="font-bold font-mono"
                 style={{
                   fontSize: '170px',
@@ -97,7 +97,7 @@ export function ScoreCard({ score, onClose }: Props) {
             </div>
 
             {/* RIGHT 50% */}
-            <div style={{ width: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end', textAlign: 'right', paddingRight: '8px', height: '75%' }}>
+            <div style={{ width: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end', textAlign: 'right', paddingRight: '8px', height: '100%', paddingTop: '16px', paddingBottom: '16px' }}>
 
               {/* User info — top */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexDirection: 'row-reverse' }}>
