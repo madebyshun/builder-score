@@ -82,8 +82,8 @@ export function ScoreCard({ score, onClose }: Props) {
           {/* Main content — 1:1, no divider */}
           <div className="absolute inset-0 flex items-center px-10 pt-8 pb-6">
 
-            {/* LEFT 50% — Score hero, no label, align left */}
-            <div style={{ width: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingLeft: '8px' }}>
+            {/* LEFT 50% + RIGHT 50% — vertically centered, score aligned with metrics */}
+            <div style={{ width: '50%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '8px' }}>
               <div className="font-bold font-mono"
                 style={{
                   fontSize: '170px',
@@ -94,15 +94,12 @@ export function ScoreCard({ score, onClose }: Props) {
                 }}>
                 {score.overall}
               </div>
-              {(sub.bankrBonus ?? 0) > 0 && (
-                <p className="font-mono" style={{ fontSize: '9px', color: '#34d399', marginTop: '8px' }}>🟦 +{sub.bankrBonus} bonus</p>
-              )}
             </div>
 
-            {/* RIGHT 50% — User + metrics, align right */}
-            <div style={{ width: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end', textAlign: 'right', paddingRight: '8px', height: '100%', paddingTop: '28px', paddingBottom: '24px' }}>
+            {/* RIGHT 50% */}
+            <div style={{ width: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end', textAlign: 'right', paddingRight: '8px', height: '75%' }}>
 
-              {/* User info */}
+              {/* User info — top */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexDirection: 'row-reverse' }}>
                 <div className="rounded-full overflow-hidden bg-[#1e2d4a]"
                   style={{ width: '52px', height: '52px', border: `2px solid ${tierColor}`, flexShrink: 0 }}>
@@ -122,26 +119,25 @@ export function ScoreCard({ score, onClose }: Props) {
                 </div>
               </div>
 
-              {/* Metrics — compact spacing */}
+              {/* Metrics — bottom, compact */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
                 {bars.map(b => (
-                  <div key={b.label} style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                  <div key={b.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span className="font-mono" style={{ fontSize: '9px', color: '#4a5568', letterSpacing: '1px' }}>
                       {b.label.toUpperCase()}
                     </span>
-                    <span className="font-bold font-mono" style={{ fontSize: '22px', color: b.color, letterSpacing: '-1px' }}>
+                    <span className="font-bold font-mono" style={{ fontSize: '22px', color: b.color, letterSpacing: '-1px', lineHeight: 1 }}>
                       +{b.value}
                     </span>
                   </div>
                 ))}
+                {(sub.bankrBonus ?? 0) > 0 && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span className="font-mono" style={{ fontSize: '9px', color: '#34d399', letterSpacing: '1px' }}>BANKR BONUS</span>
+                    <span className="font-bold font-mono" style={{ fontSize: '22px', color: '#34d399', letterSpacing: '-1px', lineHeight: 1 }}>+{sub.bankrBonus}</span>
+                  </div>
+                )}
               </div>
-
-              {/* Summary */}
-              {score.summary && (
-                <p className="font-mono" style={{ fontSize: '9px', color: '#4a5568', lineHeight: 1.6, textAlign: 'right' }}>
-                  💡 {score.summary}
-                </p>
-              )}
             </div>
           </div>
         </div>
