@@ -8,133 +8,167 @@ interface Props {
   onClose?: () => void
 }
 
-function Bar({ value, color, label, max = 100 }: { value: number; color: string; label: string; max?: number }) {
-  const pct = Math.round((value / max) * 100)
-  return (
-    <div className="flex items-center gap-2">
-      <span className="text-[11px] w-24 flex-shrink-0 font-mono" style={{ color: '#64748b' }}>{label}</span>
-      <div className="flex-1 h-1 bg-[#1a2540] rounded-full overflow-hidden">
-        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
-      </div>
-      <span className="text-[11px] w-5 text-right flex-shrink-0 font-mono font-bold" style={{ color }}>{value}</span>
-    </div>
-  )
-}
-
 export function ScoreCard({ score, onClose }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
   const tierColor = TIER_COLORS[score.tier]
   const tierEmoji = TIER_EMOJI[score.tier]
-
   const sub = score.subscores || { onchain: 0, content: 0, community: 0, bankrBonus: 0 }
+
   const bars = [
-    { label: 'Consistency',   value: sub.onchain   ?? Math.round(score.overall * 0.9),  color: '#4a90d9', max: 25 },
-    { label: 'Technical',     value: sub.content   ?? Math.round(score.overall * 0.8),  color: '#00b4d8', max: 25 },
-    { label: 'Builder focus', value: sub.community ?? Math.round(score.overall * 0.85), color: '#8b5cf6', max: 25 },
-    { label: 'Community',     value: Math.round((sub.community ?? score.overall * 0.8) * 0.9), color: '#34d399', max: 25 },
+    { label: 'Consistency',   value: sub.onchain   ?? Math.round(score.overall * 0.9),  color: '#4a90d9',  max: 25 },
+    { label: 'Technical',     value: sub.content   ?? Math.round(score.overall * 0.8),  color: '#00b4d8',  max: 25 },
+    { label: 'Builder focus', value: sub.community ?? Math.round(score.overall * 0.85), color: '#8b5cf6',  max: 25 },
+    { label: 'Community',     value: Math.round((sub.community ?? score.overall) * 0.85), color: '#34d399', max: 25 },
   ]
 
   async function handleDownload() {
     try {
       const { default: html2canvas } = await import('html2canvas')
       if (!cardRef.current) return
-      const canvas = await html2canvas(cardRef.current, { backgroundColor: '#0a0f1e', scale: 2 })
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: '#060c1a',
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+      })
       const link = document.createElement('a')
       link.download = `builder-score-${score.handle}.png`
       link.href = canvas.toDataURL('image/png')
       link.click()
     } catch {
-      alert('Download requires html2canvas. Install: npm install html2canvas')
+      alert('Download failed. Try again.')
     }
   }
 
   function handleShare() {
     const text = encodeURIComponent(
-      `My Builder Score on Base: ${score.overall}/100 ${tierEmoji}\n\nTier: ${score.tier}\n\nCheck yours 👇\nblueagent.xyz/score`
+      `My Builder Score on Base: ${score.overall} ${tierEmoji} ${score.tier}\n\nCheck yours 👇\nblueagent.xyz/score`
     )
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank')
   }
 
   return (
-    // Overlay
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
       onClick={e => { if (e.target === e.currentTarget) onClose?.() }}>
 
-      <div className="w-full max-w-2xl">
-        {/* Card — X feed optimized (500x500 ratio) */}
-        <div ref={cardRef} className="rounded-2xl overflow-hidden border border-[#1e2d4a] w-[500px]"
-          style={{ background: 'linear-gradient(135deg, #060c1a 0%, #0a1428 100%)' }}>
+      <div className="w-full max-w-4xl">
+        {/* Card — 1600x900 ratio = 16:9, rendered at ~800x450 */}
+        <div ref={cardRef}
+          className="relative w-full overflow-hidden rounded-2xl border border-[#1e2d4a]"
+          style={{
+            aspectRatio: '16/9',
+            background: 'linear-gradient(135deg, #060c1a 0%, #0a1428 60%, #060c1a 100%)',
+          }}>
 
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 py-3 border-b border-[#1e2d4a]">
-            <div className="flex items-center gap-2">
-              {['#ff5f57','#febc2e','#28c840'].map((c, i) => (
-                <div key={i} className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: c }} />
-              ))}
-              <span className="text-[#334155] text-[10px] font-mono ml-2">blue-agent ~ builder-score</span>
-            </div>
-            <span className="text-[#4a90d9] text-[10px] font-mono">blueagent.xyz</span>
+          {/* Background glow */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full opacity-10"
+              style={{ background: tierColor, filter: 'blur(80px)' }} />
+            <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-64 h-64 rounded-full opacity-5"
+              style={{ background: '#4a90d9', filter: 'blur(60px)' }} />
           </div>
 
-          {/* Main */}
-          <div className="p-5">
-            {/* Top row: avatar + score */}
-            <div className="flex items-center gap-4 mb-5">
+          {/* Top bar */}
+          <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-6 py-3 border-b border-white/5">
+            <div className="flex items-center gap-1.5">
+              {['#ff5f57','#febc2e','#28c840'].map((c, i) => (
+                <div key={i} className="w-2 h-2 rounded-full" style={{ backgroundColor: c }} />
+              ))}
+              <span className="text-white/20 text-[9px] font-mono ml-2 tracking-widest">blue-agent ~ builder-score</span>
+            </div>
+            <span className="text-white/20 text-[9px] font-mono tracking-widest">blueagent.xyz</span>
+          </div>
+
+          {/* Main content */}
+          <div className="absolute inset-0 flex items-center px-10 pt-8 pb-6 gap-10">
+
+            {/* LEFT — Avatar + handle + tier */}
+            <div className="flex flex-col items-center justify-center gap-3 flex-shrink-0">
               {/* Avatar */}
-              <div className="w-14 h-14 rounded-full overflow-hidden border-2 flex-shrink-0 bg-[#1e2d4a]"
-                style={{ borderColor: tierColor }}>
+              <div className="rounded-full overflow-hidden bg-[#1e2d4a] flex-shrink-0"
+                style={{
+                  width: '90px', height: '90px',
+                  border: `2.5px solid ${tierColor}`,
+                  boxShadow: `0 0 20px ${tierColor}44`
+                }}>
                 {score.avatar ? (
                   <img src={score.avatar} alt={score.handle}
-                    className="w-full h-full object-cover"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    crossOrigin="anonymous"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-xl">🟦</div>
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px' }}>🟦</div>
                 )}
               </div>
 
-              {/* Handle + tier */}
-              <div className="flex-1">
-                <p className="text-white font-bold text-sm font-mono">@{score.handle}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[10px] px-2 py-0.5 rounded-full border font-mono"
-                    style={{ color: tierColor, borderColor: tierColor, backgroundColor: `${tierColor}15` }}>
+              {/* Handle */}
+              <div className="text-center">
+                <p className="text-white font-bold font-mono" style={{ fontSize: '13px' }}>@{score.handle}</p>
+                <div className="flex items-center justify-center gap-1 mt-1">
+                  <span className="font-mono rounded-full px-2 py-0.5"
+                    style={{
+                      fontSize: '10px',
+                      color: tierColor,
+                      border: `1px solid ${tierColor}`,
+                      backgroundColor: `${tierColor}15`
+                    }}>
                     {tierEmoji} {score.tier}
                   </span>
-                  {(sub.bankrBonus ?? 0) > 0 && (
-                    <span className="text-[10px] text-[#34d399] font-mono">🟦 +{sub.bankrBonus}</span>
-                  )}
                 </div>
-              </div>
-
-              {/* Big score */}
-              <div className="text-right">
-                <span className="font-bold text-white font-mono leading-none"
-                  style={{ fontSize: '52px', textShadow: `0 0 20px ${tierColor}88` }}>
-                  {score.overall}
-                </span>
+                {(sub.bankrBonus ?? 0) > 0 && (
+                  <p className="text-[9px] font-mono mt-1" style={{ color: '#34d399' }}>🟦 +{sub.bankrBonus} bonus</p>
+                )}
               </div>
             </div>
 
-            {/* Divider */}
-            <div className="border-t border-[#1e2d4a] mb-4" />
+            {/* VERTICAL DIVIDER */}
+            <div className="flex-shrink-0 self-stretch" style={{ width: '1px', backgroundColor: '#1e2d4a' }} />
 
-            {/* Sub-scores */}
-            <div className="space-y-2.5 mb-4">
-              {bars.map(b => <Bar key={b.label} {...b} />)}
+            {/* CENTER — Big score */}
+            <div className="flex flex-col items-center justify-center flex-shrink-0">
+              <p className="font-mono mb-1" style={{ fontSize: '10px', color: '#334155', letterSpacing: '3px' }}>SCORE</p>
+              <div className="font-bold font-mono leading-none"
+                style={{
+                  fontSize: '120px',
+                  color: '#ffffff',
+                  textShadow: `0 0 40px ${tierColor}88, 0 0 80px ${tierColor}44`,
+                  lineHeight: 1,
+                }}>
+                {score.overall}
+              </div>
             </div>
 
-            {/* Summary */}
-            {score.summary && (
-              <div className="border-t border-[#1e2d4a] pt-3 mt-3">
-                <p className="text-[#64748b] text-[11px] font-mono leading-relaxed">
-                  💡 {score.summary}
-                </p>
-              </div>
-            )}
+            {/* VERTICAL DIVIDER */}
+            <div className="flex-shrink-0 self-stretch" style={{ width: '1px', backgroundColor: '#1e2d4a' }} />
+
+            {/* RIGHT — Sub-scores + summary */}
+            <div className="flex-1 flex flex-col justify-center gap-3">
+              {bars.map(b => {
+                const pct = Math.round((b.value / b.max) * 100)
+                return (
+                  <div key={b.label} className="flex items-center gap-3">
+                    <span className="font-mono flex-shrink-0" style={{ fontSize: '10px', color: '#4a5568', width: '72px' }}>{b.label}</span>
+                    <div className="flex-1 rounded-full overflow-hidden" style={{ height: '4px', backgroundColor: '#1a2540' }}>
+                      <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: b.color }} />
+                    </div>
+                    <span className="font-mono font-bold flex-shrink-0" style={{ fontSize: '11px', color: b.color, width: '20px', textAlign: 'right' }}>{b.value}</span>
+                  </div>
+                )
+              })}
+
+              {/* Summary */}
+              {score.summary && (
+                <div style={{ borderTop: '1px solid #1e2d4a', paddingTop: '10px', marginTop: '2px' }}>
+                  <p className="font-mono leading-relaxed" style={{ fontSize: '9px', color: '#4a5568' }}>
+                    {score.summary}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Action buttons — outside card */}
+        {/* Actions */}
         <div className="flex gap-3 mt-4 justify-center">
           <button onClick={handleDownload}
             className="flex items-center gap-2 text-xs border border-[#4a90d9] text-[#4a90d9] px-4 py-2 rounded-lg hover:bg-[#4a90d9] hover:text-white transition font-mono">
