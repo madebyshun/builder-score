@@ -10,27 +10,23 @@ function getTier(score: number): string {
   return 'Explorer'
 }
 
-async function askBankrAgent(prompt: string): Promise<string> {
-  // Submit job
-  const submit = await fetch('https://api.bankr.bot/agent/prompt', {
+async function askLLM(prompt: string): Promise<string> {
+  // Use Bankr LLM Gateway (fast, sync)
+  const res = await fetch('https://llm.bankr.bot/v1/messages', {
     method: 'POST',
-    headers: { 'X-API-Key': BANKR_API_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt })
-  })
-  const { jobId } = await submit.json()
-  if (!jobId) throw new Error('No jobId')
-
-  // Poll until done
-  for (let i = 0; i < 30; i++) {
-    await new Promise(r => setTimeout(r, 2000))
-    const poll = await fetch(`https://api.bankr.bot/agent/job/${jobId}`, {
-      headers: { 'X-API-Key': BANKR_API_KEY }
+    headers: {
+      'x-api-key': BANKR_API_KEY,
+      'content-type': 'application/json',
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4.5',
+      max_tokens: 400,
+      messages: [{ role: 'user', content: prompt }]
     })
-    const data = await poll.json()
-    if (data.status === 'completed' || data.status === 'done') return data.response || ''
-    if (data.status === 'failed') throw new Error('Job failed')
-  }
-  throw new Error('Timeout')
+  })
+  const data = await res.json()
+  return data.content?.[0]?.text || ''
 }
 
 export async function GET(req: NextRequest) {
@@ -47,7 +43,7 @@ Content: X/100
 Community: X/100
 SUMMARY: one sentence about this builder`
 
-    const result = await askBankrAgent(prompt)
+    const result = await askLLM(prompt)
 
     // Parse response
     const scoreMatch = result.match(/SCORE:\s*(\d+)\/100/i)
