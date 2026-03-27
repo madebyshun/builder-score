@@ -79,75 +79,69 @@ export function ScoreCard({ score, onClose }: Props) {
             <span className="text-white/20 text-[9px] font-mono tracking-widest">blueagent.xyz</span>
           </div>
 
-          {/* Main content */}
-          <div className="absolute inset-0 flex items-center px-10 pt-8 pb-6 gap-8">
+          {/* Main content — 2 cols, no divider */}
+          <div className="absolute inset-0 flex items-center px-10 pt-8 pb-6 gap-6">
 
-            {/* LEFT — handle + tier + SCORE */}
-            <div className="flex flex-col justify-center flex-shrink-0" style={{ minWidth: '200px' }}>
-              {/* Handle + avatar row */}
-              <div className="flex items-center gap-3 mb-3">
+            {/* LEFT — Score, align left */}
+            <div className="flex flex-col justify-center flex-shrink-0" style={{ minWidth: '180px', alignItems: 'flex-start' }}>
+              <p className="font-mono" style={{ fontSize: '9px', color: '#334155', letterSpacing: '3px', marginBottom: '4px' }}>SCORE</p>
+              <div className="font-bold font-mono leading-none"
+                style={{
+                  fontSize: '120px',
+                  color: '#ffffff',
+                  textShadow: `0 0 40px ${tierColor}88, 0 0 80px ${tierColor}44`,
+                  lineHeight: 1,
+                  letterSpacing: '-5px',
+                }}>
+                {score.overall}
+              </div>
+              {(sub.bankrBonus ?? 0) > 0 && (
+                <p className="font-mono mt-2" style={{ fontSize: '9px', color: '#34d399' }}>🟦 +{sub.bankrBonus} bonus</p>
+              )}
+            </div>
+
+            {/* RIGHT — Profile + metrics, align right */}
+            <div className="flex-1 flex flex-col justify-center gap-2" style={{ alignItems: 'flex-end', textAlign: 'right' }}>
+
+              {/* Handle + avatar */}
+              <div className="flex items-center gap-3 mb-1" style={{ flexDirection: 'row-reverse' }}>
                 <div className="rounded-full overflow-hidden bg-[#1e2d4a] flex-shrink-0"
-                  style={{ width: '48px', height: '48px', border: `2px solid ${tierColor}` }}>
+                  style={{ width: '44px', height: '44px', border: `2px solid ${tierColor}` }}>
                   {score.avatar ? (
                     <img src={score.avatar} alt={score.handle}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       crossOrigin="anonymous"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
                   ) : (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>🟦</div>
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🟦</div>
                   )}
                 </div>
-                <div>
-                  <p className="text-white font-bold font-mono" style={{ fontSize: '14px' }}>@{score.handle}</p>
-                  <span className="font-mono" style={{ fontSize: '10px', color: tierColor }}>
-                    {tierEmoji} {score.tier}
-                  </span>
+                <div style={{ textAlign: 'right' }}>
+                  <p className="font-bold font-mono text-white" style={{ fontSize: '14px' }}>@{score.handle}</p>
+                  <p className="font-mono" style={{ fontSize: '10px', color: tierColor }}>{tierEmoji} {score.tier}</p>
                 </div>
               </div>
 
-              {/* SCORE label */}
-              <p className="font-mono" style={{ fontSize: '9px', color: '#334155', letterSpacing: '3px', marginBottom: '4px' }}>SCORE</p>
+              {/* Divider */}
+              <div style={{ height: '1px', backgroundColor: '#1e2d4a', width: '100%', margin: '4px 0' }} />
 
-              {/* Hero number */}
-              <div className="font-bold font-mono leading-none"
-                style={{
-                  fontSize: '110px',
-                  color: '#ffffff',
-                  textShadow: `0 0 40px ${tierColor}88, 0 0 80px ${tierColor}44`,
-                  lineHeight: 1,
-                  letterSpacing: '-4px',
-                }}>
-                {score.overall}
-              </div>
-
-              {(sub.bankrBonus ?? 0) > 0 && (
-                <p className="font-mono mt-2" style={{ fontSize: '9px', color: '#34d399' }}>🟦 +{sub.bankrBonus} Bankr bonus</p>
-              )}
-            </div>
-
-            {/* VERTICAL DIVIDER */}
-            <div className="flex-shrink-0 self-stretch" style={{ width: '1px', backgroundColor: '#1e2d4a' }} />
-
-            {/* RIGHT — Metrics + summary */}
-            <div className="flex-1 flex flex-col justify-center gap-3">
+              {/* Metrics — label left, value right in same row */}
               {bars.map(b => (
-                <div key={b.label}>
-                  <p className="font-mono" style={{ fontSize: '9px', color: '#4a5568', letterSpacing: '1.5px', marginBottom: '2px' }}>
+                <div key={b.label} className="flex items-baseline justify-between w-full">
+                  <span className="font-mono" style={{ fontSize: '9px', color: '#4a5568', letterSpacing: '1.5px' }}>
                     {b.label.toUpperCase()}
-                  </p>
-                  <p className="font-bold font-mono" style={{ fontSize: '26px', color: b.color, letterSpacing: '-1px', lineHeight: 1 }}>
+                  </span>
+                  <span className="font-bold font-mono" style={{ fontSize: '22px', color: b.color, letterSpacing: '-1px' }}>
                     +{b.value}
-                  </p>
+                  </span>
                 </div>
               ))}
 
               {/* Summary */}
               {score.summary && (
-                <div style={{ borderTop: '1px solid #1e2d4a', paddingTop: '10px', marginTop: '2px' }}>
-                  <p className="font-mono leading-relaxed" style={{ fontSize: '10px', color: '#64748b' }}>
-                    💡 {score.summary}
-                  </p>
-                </div>
+                <p className="font-mono leading-relaxed" style={{ fontSize: '9px', color: '#4a5568', marginTop: '6px', textAlign: 'right' }}>
+                  💡 {score.summary}
+                </p>
               )}
             </div>
           </div>
