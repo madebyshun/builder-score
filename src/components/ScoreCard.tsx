@@ -79,19 +79,19 @@ export function ScoreCard({ score, onClose }: Props) {
             <span className="text-white/20 text-[9px] font-mono tracking-widest">blueagent.xyz</span>
           </div>
 
-          {/* Main content — 2 cols, no divider */}
-          <div className="absolute inset-0 flex items-center px-10 pt-8 pb-6 gap-6">
+          {/* Main content — 1:1, no divider */}
+          <div className="absolute inset-0 flex items-center px-10 pt-8 pb-6">
 
-            {/* LEFT — Score, align left */}
-            <div className="flex flex-col justify-center flex-shrink-0" style={{ minWidth: '180px', alignItems: 'flex-start' }}>
+            {/* LEFT 50% — Score, align left */}
+            <div className="flex flex-col justify-center" style={{ width: '50%', alignItems: 'flex-start' }}>
               <p className="font-mono" style={{ fontSize: '9px', color: '#334155', letterSpacing: '3px', marginBottom: '4px' }}>SCORE</p>
-              <div className="font-bold font-mono leading-none"
+              <div className="font-bold font-mono"
                 style={{
-                  fontSize: '120px',
+                  fontSize: '130px',
                   color: '#ffffff',
                   textShadow: `0 0 40px ${tierColor}88, 0 0 80px ${tierColor}44`,
                   lineHeight: 1,
-                  letterSpacing: '-5px',
+                  letterSpacing: '-6px',
                 }}>
                 {score.overall}
               </div>
@@ -100,46 +100,45 @@ export function ScoreCard({ score, onClose }: Props) {
               )}
             </div>
 
-            {/* RIGHT — Profile + metrics, align right */}
-            <div className="flex-1 flex flex-col justify-center gap-2" style={{ alignItems: 'flex-end', textAlign: 'right' }}>
+            {/* RIGHT 50% — User info + metrics, align right */}
+            <div className="flex flex-col justify-center" style={{ width: '50%', alignItems: 'flex-end', textAlign: 'right', gap: '10px' }}>
 
-              {/* Handle + avatar */}
-              <div className="flex items-center gap-3 mb-1" style={{ flexDirection: 'row-reverse' }}>
-                <div className="rounded-full overflow-hidden bg-[#1e2d4a] flex-shrink-0"
-                  style={{ width: '44px', height: '44px', border: `2px solid ${tierColor}` }}>
+              {/* Avatar + handle + tier */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexDirection: 'row-reverse' }}>
+                <div className="rounded-full overflow-hidden bg-[#1e2d4a]"
+                  style={{ width: '48px', height: '48px', border: `2px solid ${tierColor}`, flexShrink: 0 }}>
                   {score.avatar ? (
                     <img src={score.avatar} alt={score.handle}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       crossOrigin="anonymous"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
                   ) : (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>🟦</div>
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>🟦</div>
                   )}
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p className="font-bold font-mono text-white" style={{ fontSize: '14px' }}>@{score.handle}</p>
+                  <p className="font-bold font-mono" style={{ fontSize: '15px', color: '#ffffff' }}>@{score.handle}</p>
                   <p className="font-mono" style={{ fontSize: '10px', color: tierColor }}>{tierEmoji} {score.tier}</p>
                 </div>
               </div>
 
-              {/* Divider */}
-              <div style={{ height: '1px', backgroundColor: '#1e2d4a', width: '100%', margin: '4px 0' }} />
-
-              {/* Metrics — label left, value right in same row */}
-              {bars.map(b => (
-                <div key={b.label} className="flex items-baseline justify-between w-full">
-                  <span className="font-mono" style={{ fontSize: '9px', color: '#4a5568', letterSpacing: '1.5px' }}>
-                    {b.label.toUpperCase()}
-                  </span>
-                  <span className="font-bold font-mono" style={{ fontSize: '22px', color: b.color, letterSpacing: '-1px' }}>
-                    +{b.value}
-                  </span>
-                </div>
-              ))}
+              {/* Metrics */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%' }}>
+                {bars.map(b => (
+                  <div key={b.label} style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                    <span className="font-mono" style={{ fontSize: '9px', color: '#4a5568', letterSpacing: '1.5px' }}>
+                      {b.label.toUpperCase()}
+                    </span>
+                    <span className="font-bold font-mono" style={{ fontSize: '24px', color: b.color, letterSpacing: '-1px' }}>
+                      +{b.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
 
               {/* Summary */}
               {score.summary && (
-                <p className="font-mono leading-relaxed" style={{ fontSize: '9px', color: '#4a5568', marginTop: '6px', textAlign: 'right' }}>
+                <p className="font-mono" style={{ fontSize: '9px', color: '#4a5568', lineHeight: 1.6 }}>
                   💡 {score.summary}
                 </p>
               )}
