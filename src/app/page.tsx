@@ -42,10 +42,11 @@ export default function Home() {
       // Ensure subscores exist
       if (!data.subscores) {
         data.subscores = {
-          onchain: Math.round((data.overall || 50) * 0.9),
-          content: Math.round((data.overall || 50) * 0.8),
-          community: Math.round((data.overall || 50) * 0.85),
-          bankrBonus: 0
+          consistency:  Math.round((data.overall || 50) * 0.22),
+          technical:    Math.round((data.overall || 50) * 0.20),
+          builderFocus: Math.round((data.overall || 50) * 0.21),
+          community:    Math.round((data.overall || 50) * 0.19),
+          bankrBonus:   0
         }
       }
       setScore(data)

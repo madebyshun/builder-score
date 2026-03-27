@@ -12,13 +12,13 @@ export function ScoreCard({ score, onClose }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
   const tierColor = TIER_COLORS[score.tier]
   const tierEmoji = TIER_EMOJI[score.tier]
-  const sub = score.subscores || { onchain: 0, content: 0, community: 0, bankrBonus: 0 }
+  const sub = score.subscores || { consistency: 0, technical: 0, builderFocus: 0, community: 0, bankrBonus: 0 }
 
   const bars = [
-    { label: 'Consistency',   value: sub.onchain   ?? Math.round(score.overall * 0.9),  color: '#4a90d9',  max: 25 },
-    { label: 'Technical',     value: sub.content   ?? Math.round(score.overall * 0.8),  color: '#00b4d8',  max: 25 },
-    { label: 'Builder focus', value: sub.community ?? Math.round(score.overall * 0.85), color: '#8b5cf6',  max: 25 },
-    { label: 'Community',     value: Math.round((sub.community ?? score.overall) * 0.85), color: '#34d399', max: 25 },
+    { label: 'Consistency',   value: sub.consistency  ?? Math.round(score.overall * 0.22), color: '#4a90d9', max: 25 },
+    { label: 'Technical',     value: sub.technical    ?? Math.round(score.overall * 0.20), color: '#00b4d8', max: 25 },
+    { label: 'Builder focus', value: sub.builderFocus ?? Math.round(score.overall * 0.21), color: '#8b5cf6', max: 25 },
+    { label: 'Community',     value: sub.community    ?? Math.round(score.overall * 0.19), color: '#34d399', max: 25 },
   ]
 
   async function handleDownload() {

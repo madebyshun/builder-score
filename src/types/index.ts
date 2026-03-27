@@ -2,10 +2,11 @@ export interface BuilderScore {
   handle: string
   overall: number
   subscores: {
-    onchain: number
-    content: number
-    community: number
-    bankrBonus: number  // bonus pts, not a sub-score
+    consistency:  number
+    technical:    number
+    builderFocus: number
+    community:    number
+    bankrBonus:   number
   }
   tier: 'Explorer' | 'Builder' | 'Shipper' | 'Founder' | 'Legend'
   summary?: string
