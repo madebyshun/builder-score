@@ -8,15 +8,15 @@ interface Props {
   onClose?: () => void
 }
 
-function Bar({ value, color, label }: { value: number; color: string; label: string }) {
+function Bar({ value, color, label, max = 100 }: { value: number; color: string; label: string; max?: number }) {
+  const pct = Math.round((value / max) * 100)
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-xs w-20 flex-shrink-0 font-mono" style={{ color }}>{label}</span>
-      <div className="flex-1 h-1.5 bg-[#1a2540] rounded-full overflow-hidden">
-        <div className="h-full rounded-full transition-all duration-700"
-          style={{ width: `${value}%`, backgroundColor: color }} />
+    <div className="flex items-center gap-2">
+      <span className="text-[11px] w-24 flex-shrink-0 font-mono" style={{ color: '#64748b' }}>{label}</span>
+      <div className="flex-1 h-1 bg-[#1a2540] rounded-full overflow-hidden">
+        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
       </div>
-      <span className="text-xs w-7 text-right flex-shrink-0 font-mono" style={{ color }}>{value}</span>
+      <span className="text-[11px] w-5 text-right flex-shrink-0 font-mono font-bold" style={{ color }}>{value}</span>
     </div>
   )
 }
@@ -28,9 +28,10 @@ export function ScoreCard({ score, onClose }: Props) {
 
   const sub = score.subscores || { onchain: 0, content: 0, community: 0, bankrBonus: 0 }
   const bars = [
-    { label: 'Onchain',   value: sub.onchain   ?? Math.round(score.overall * 0.9), color: '#4a90d9' },
-    { label: 'Content',   value: sub.content   ?? Math.round(score.overall * 0.8), color: '#00b4d8' },
-    { label: 'Community', value: sub.community ?? Math.round(score.overall * 0.85), color: '#34d399' },
+    { label: 'Consistency',   value: sub.onchain   ?? Math.round(score.overall * 0.9),  color: '#4a90d9', max: 25 },
+    { label: 'Technical',     value: sub.content   ?? Math.round(score.overall * 0.8),  color: '#00b4d8', max: 25 },
+    { label: 'Builder focus', value: sub.community ?? Math.round(score.overall * 0.85), color: '#8b5cf6', max: 25 },
+    { label: 'Community',     value: Math.round((sub.community ?? score.overall * 0.8) * 0.9), color: '#34d399', max: 25 },
   ]
 
   async function handleDownload() {
@@ -60,91 +61,76 @@ export function ScoreCard({ score, onClose }: Props) {
       onClick={e => { if (e.target === e.currentTarget) onClose?.() }}>
 
       <div className="w-full max-w-2xl">
-        {/* Card */}
-        <div ref={cardRef} className="rounded-2xl overflow-hidden border border-[#1e2d4a]"
-          style={{ background: 'linear-gradient(135deg, #0a0f1e 0%, #0d1a35 100%)' }}>
+        {/* Card — X feed optimized (500x500 ratio) */}
+        <div ref={cardRef} className="rounded-2xl overflow-hidden border border-[#1e2d4a] w-[500px]"
+          style={{ background: 'linear-gradient(135deg, #060c1a 0%, #0a1428 100%)' }}>
 
-          {/* Title bar */}
-          <div className="flex items-center gap-2 px-5 py-3 bg-[#4a90d9]/10 border-b border-[#1e2d4a]">
-            {['#ff5f57','#febc2e','#28c840'].map((c, i) => (
-              <div key={i} className="w-3 h-3 rounded-full" style={{ backgroundColor: c }} />
-            ))}
-            <span className="text-[#4a90d9] text-xs font-mono ml-3 tracking-widest">blue-agent ~ builder-score</span>
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-3 border-b border-[#1e2d4a]">
+            <div className="flex items-center gap-2">
+              {['#ff5f57','#febc2e','#28c840'].map((c, i) => (
+                <div key={i} className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: c }} />
+              ))}
+              <span className="text-[#334155] text-[10px] font-mono ml-2">blue-agent ~ builder-score</span>
+            </div>
+            <span className="text-[#4a90d9] text-[10px] font-mono">blueagent.xyz</span>
           </div>
 
-          {/* Main content — horizontal layout */}
-          <div className="flex gap-6 p-6">
-
-            {/* Left: Avatar + score */}
-            <div className="flex flex-col items-center flex-shrink-0 w-40">
+          {/* Main */}
+          <div className="p-5">
+            {/* Top row: avatar + score */}
+            <div className="flex items-center gap-4 mb-5">
               {/* Avatar */}
-              <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[#4a90d9] mb-3 bg-[#1e2d4a]">
+              <div className="w-14 h-14 rounded-full overflow-hidden border-2 flex-shrink-0 bg-[#1e2d4a]"
+                style={{ borderColor: tierColor }}>
                 {score.avatar ? (
                   <img src={score.avatar} alt={score.handle}
                     className="w-full h-full object-cover"
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-2xl">🟦</div>
+                  <div className="w-full h-full flex items-center justify-center text-xl">🟦</div>
                 )}
               </div>
 
-              {/* Handle */}
-              <p className="text-[#4a90d9] text-xs font-mono mb-1">@{score.handle}</p>
+              {/* Handle + tier */}
+              <div className="flex-1">
+                <p className="text-white font-bold text-sm font-mono">@{score.handle}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full border font-mono"
+                    style={{ color: tierColor, borderColor: tierColor, backgroundColor: `${tierColor}15` }}>
+                    {tierEmoji} {score.tier}
+                  </span>
+                  {(sub.bankrBonus ?? 0) > 0 && (
+                    <span className="text-[10px] text-[#34d399] font-mono">🟦 +{sub.bankrBonus}</span>
+                  )}
+                </div>
+              </div>
 
               {/* Big score */}
-              <div className="flex items-baseline gap-1 mb-1">
-                <span className="text-6xl font-bold text-white leading-none" style={{ textShadow: '0 0 30px #4a90d9aa' }}>{score.overall}</span>
+              <div className="text-right">
+                <span className="font-bold text-white font-mono leading-none"
+                  style={{ fontSize: '52px', textShadow: `0 0 20px ${tierColor}88` }}>
+                  {score.overall}
+                </span>
               </div>
-
-              {/* Tier badge */}
-              <div className="flex items-center gap-1 px-3 py-1 rounded-full border text-xs font-mono mt-1"
-                style={{ color: tierColor, borderColor: tierColor, backgroundColor: `${tierColor}15` }}>
-                {tierEmoji} {score.tier}
-              </div>
-
-              {/* Bankr bonus */}
-              {(sub.bankrBonus ?? 0) > 0 && (
-                <div className="mt-2 text-[10px] text-[#34d399] font-mono">
-                  🟦 +{sub.bankrBonus} Bankr bonus
-                </div>
-              )}
             </div>
 
             {/* Divider */}
-            <div className="w-px bg-[#1e2d4a] flex-shrink-0" />
+            <div className="border-t border-[#1e2d4a] mb-4" />
 
-            {/* Right: Sub-scores + summary */}
-            <div className="flex-1 flex flex-col justify-between">
+            {/* Sub-scores */}
+            <div className="space-y-2.5 mb-4">
+              {bars.map(b => <Bar key={b.label} {...b} />)}
+            </div>
 
-              {/* Overall bar */}
-              <div className="mb-5">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[#4a90d9] text-xs font-mono">Overall</span>
-                  <span className="text-white text-xs font-mono font-bold">{score.overall}</span>
-                </div>
-                <div className="w-full h-2 bg-[#1a2540] rounded-full overflow-hidden">
-                  <div className="h-full bg-[#4a90d9] rounded-full"
-                    style={{ width: `${score.overall}%` }} />
-                </div>
-              </div>
-
-              {/* Sub-scores */}
-              <div className="space-y-3 mb-5">
-                {bars.map(b => <Bar key={b.label} {...b} />)}
-              </div>
-
-              {/* Summary */}
-              {score.summary && (
-                <p className="text-[#4a90d9] text-xs font-mono leading-relaxed border-t border-[#1e2d4a] pt-3">
+            {/* Summary */}
+            {score.summary && (
+              <div className="border-t border-[#1e2d4a] pt-3 mt-3">
+                <p className="text-[#64748b] text-[11px] font-mono leading-relaxed">
                   💡 {score.summary}
                 </p>
-              )}
-
-              {/* CTA */}
-              <div className="text-[10px] text-[#334155] font-mono mt-3">
-                → blueagent.xyz/score
               </div>
-            </div>
+            )}
           </div>
         </div>
 
