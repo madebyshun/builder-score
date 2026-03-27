@@ -82,54 +82,54 @@ export function ScoreCard({ score, onClose }: Props) {
           {/* Main content — 1:1, no divider */}
           <div className="absolute inset-0 flex items-center px-10 pt-8 pb-6">
 
-            {/* LEFT 50% — Score, align left */}
-            <div className="flex flex-col justify-center" style={{ width: '50%', alignItems: 'flex-start' }}>
-              <p className="font-mono" style={{ fontSize: '9px', color: '#334155', letterSpacing: '3px', marginBottom: '4px' }}>SCORE</p>
+            {/* LEFT 50% — Score hero, no label, align left */}
+            <div style={{ width: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingLeft: '8px' }}>
               <div className="font-bold font-mono"
                 style={{
-                  fontSize: '130px',
+                  fontSize: '170px',
                   color: '#ffffff',
-                  textShadow: `0 0 40px ${tierColor}88, 0 0 80px ${tierColor}44`,
+                  textShadow: `0 0 50px ${tierColor}99, 0 0 100px ${tierColor}44`,
                   lineHeight: 1,
-                  letterSpacing: '-6px',
+                  letterSpacing: '-8px',
                 }}>
                 {score.overall}
               </div>
               {(sub.bankrBonus ?? 0) > 0 && (
-                <p className="font-mono mt-2" style={{ fontSize: '9px', color: '#34d399' }}>🟦 +{sub.bankrBonus} bonus</p>
+                <p className="font-mono" style={{ fontSize: '9px', color: '#34d399', marginTop: '8px' }}>🟦 +{sub.bankrBonus} bonus</p>
               )}
             </div>
 
-            {/* RIGHT 50% — User info + metrics, align right */}
-            <div className="flex flex-col justify-center" style={{ width: '50%', alignItems: 'flex-end', textAlign: 'right', gap: '10px' }}>
+            {/* RIGHT 50% — User + metrics, align right */}
+            <div style={{ width: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-end', textAlign: 'right', paddingRight: '8px', height: '100%', paddingTop: '28px', paddingBottom: '24px' }}>
 
-              {/* Avatar + handle + tier */}
+              {/* User info */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexDirection: 'row-reverse' }}>
                 <div className="rounded-full overflow-hidden bg-[#1e2d4a]"
-                  style={{ width: '48px', height: '48px', border: `2px solid ${tierColor}`, flexShrink: 0 }}>
+                  style={{ width: '52px', height: '52px', border: `2px solid ${tierColor}`, flexShrink: 0 }}>
                   {score.avatar ? (
                     <img src={score.avatar} alt={score.handle}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       crossOrigin="anonymous"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
                   ) : (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>🟦</div>
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>🟦</div>
                   )}
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <p className="font-bold font-mono" style={{ fontSize: '15px', color: '#ffffff' }}>@{score.handle}</p>
-                  <p className="font-mono" style={{ fontSize: '10px', color: tierColor }}>{tierEmoji} {score.tier}</p>
+                  <p className="font-bold font-mono" style={{ fontSize: '16px', color: '#ffffff', letterSpacing: '-0.5px' }}>@{score.handle}</p>
+                  <p className="font-mono" style={{ fontSize: '11px', color: '#a0aec0', marginTop: '1px' }}>Base Builder</p>
+                  <p className="font-mono" style={{ fontSize: '10px', color: tierColor, marginTop: '2px' }}>{tierEmoji} {score.tier}</p>
                 </div>
               </div>
 
-              {/* Metrics */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%' }}>
+              {/* Metrics — compact spacing */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
                 {bars.map(b => (
                   <div key={b.label} style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                    <span className="font-mono" style={{ fontSize: '9px', color: '#4a5568', letterSpacing: '1.5px' }}>
+                    <span className="font-mono" style={{ fontSize: '9px', color: '#4a5568', letterSpacing: '1px' }}>
                       {b.label.toUpperCase()}
                     </span>
-                    <span className="font-bold font-mono" style={{ fontSize: '24px', color: b.color, letterSpacing: '-1px' }}>
+                    <span className="font-bold font-mono" style={{ fontSize: '22px', color: b.color, letterSpacing: '-1px' }}>
                       +{b.value}
                     </span>
                   </div>
@@ -138,7 +138,7 @@ export function ScoreCard({ score, onClose }: Props) {
 
               {/* Summary */}
               {score.summary && (
-                <p className="font-mono" style={{ fontSize: '9px', color: '#4a5568', lineHeight: 1.6 }}>
+                <p className="font-mono" style={{ fontSize: '9px', color: '#4a5568', lineHeight: 1.6, textAlign: 'right' }}>
                   💡 {score.summary}
                 </p>
               )}
