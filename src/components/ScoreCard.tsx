@@ -142,25 +142,31 @@ export function ScoreCard({ score, onClose }: Props) {
             <div className="flex-shrink-0 self-stretch" style={{ width: '1px', backgroundColor: '#1e2d4a' }} />
 
             {/* RIGHT — Sub-scores + summary */}
-            <div className="flex-1 flex flex-col justify-center gap-3">
-              {bars.map(b => {
-                const pct = Math.round((b.value / b.max) * 100)
-                return (
-                  <div key={b.label} className="flex items-center gap-3">
-                    <span className="font-mono flex-shrink-0" style={{ fontSize: '10px', color: '#4a5568', width: '72px' }}>{b.label}</span>
-                    <div className="flex-1 rounded-full overflow-hidden" style={{ height: '4px', backgroundColor: '#1a2540' }}>
-                      <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: b.color }} />
-                    </div>
-                    <span className="font-mono font-bold flex-shrink-0" style={{ fontSize: '11px', color: b.color, width: '20px', textAlign: 'right' }}>{b.value}</span>
-                  </div>
-                )
-              })}
+            <div className="flex-1 flex flex-col justify-center gap-2">
+              {bars.map(b => (
+                <div key={b.label} className="flex items-center justify-between">
+                  <span className="font-mono" style={{ fontSize: '9px', color: '#4a5568', letterSpacing: '1px' }}>
+                    {b.label.toUpperCase()}
+                  </span>
+                  <span className="font-mono font-bold" style={{ fontSize: '22px', color: b.color, letterSpacing: '-1px' }}>
+                    +{b.value}
+                  </span>
+                </div>
+              ))}
 
-              {/* Summary */}
+              {/* Bankr bonus */}
+              {(sub.bankrBonus ?? 0) > 0 && (
+                <div className="flex items-center justify-between" style={{ opacity: 0.7 }}>
+                  <span className="font-mono" style={{ fontSize: '9px', color: '#34d399', letterSpacing: '1px' }}>BANKR BONUS</span>
+                  <span className="font-mono font-bold" style={{ fontSize: '22px', color: '#34d399', letterSpacing: '-1px' }}>+{sub.bankrBonus}</span>
+                </div>
+              )}
+
+              {/* Summary — 💡 same as bot */}
               {score.summary && (
-                <div style={{ borderTop: '1px solid #1e2d4a', paddingTop: '10px', marginTop: '2px' }}>
-                  <p className="font-mono leading-relaxed" style={{ fontSize: '9px', color: '#4a5568' }}>
-                    {score.summary}
+                <div style={{ borderTop: '1px solid #1e2d4a', paddingTop: '10px', marginTop: '4px' }}>
+                  <p className="font-mono leading-relaxed" style={{ fontSize: '10px', color: '#64748b' }}>
+                    💡 {score.summary}
                   </p>
                 </div>
               )}
