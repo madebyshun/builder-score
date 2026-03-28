@@ -6,11 +6,14 @@ export interface BuilderScore {
     technical:    number
     builderFocus: number
     community:    number
-    bankrBonus:   number
+    bankrBonus?:  number
   }
   tier: 'Explorer' | 'Builder' | 'Shipper' | 'Founder' | 'Legend'
   summary?: string
   avatar?: string
+  farcaster?: {
+    followers: number
+  } | null
 }
 
 export interface Project {
