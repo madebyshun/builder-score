@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Builder Score 🟦
 
-## Getting Started
+AI-powered reputation score for Base builders.
 
-First, run the development server:
+Scan any X/Twitter handle → get a score in seconds.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+🟦 Builder Score
+@jessepollak
+
+Score: 95/100 🏆
+Tier: Legend
+
+Consistency: 24/25
+Technical: 23/25
+Builder focus: 25/25
+Community: 23/25
+
+💡 The face of Base — ships daily, builds in public.
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How it works
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+4 dimensions × 25 points = 100 total:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Dimension     | What it measures |
+|---------------|-----------------|
+| Consistency   | Posting frequency, showing up daily |
+| Technical     | Code quality, smart contracts, depth |
+| Builder focus | Projects shipped, onchain activity |
+| Community     | Followers, engagement, recognition |
 
-## Learn More
+AI scans X/Twitter profile + posts. No self-reporting. No gaming.
 
-To learn more about Next.js, take a look at the following resources:
+## Try it
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Telegram bot: [@Blockyagent_beta_bot](https://t.me/Blockyagent_beta_bot)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+/score @yourhandle
+```
 
-## Deploy on Vercel
+## Use the skill in your bot
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+See [`skill/README.md`](./skill/README.md) — plug Builder Score into any Telegram bot in minutes.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tiers
+
+| Score | Tier        |
+|-------|-------------|
+| 0–30  | 🌱 Explorer |
+| 31–50 | 🔨 Builder  |
+| 51–70 | ⚡ Shipper  |
+| 71–85 | 🚀 Founder  |
+| 86+   | 🏆 Legend   |
+
+## Built by
+
+[Blocky Studio](https://x.com/blockyonbase) — building onchain on Base.
+
+Powered by [Bankr](https://bankr.bot) LLM + Agent.

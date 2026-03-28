@@ -63,6 +63,11 @@ Powered by Blue Agent 🟦 · Blocky Studio
 - **Basename** via ensdata.net
 - **ENS** via ensdata.net
 
+## Requirements
+
+- Any LLM or agent function that can search X/Twitter (e.g. Bankr Agent)
+- No API keys needed for identity checks (Farcaster, ENS, Basename)
+
 ## Built by
 
-Blocky Studio · [@blocky_agent](https://x.com/blocky_agent)
+Blocky Studio · [@blockyonbase](https://x.com/blockyonbase) · [@blocky_agent](https://x.com/blocky_agent)
