@@ -13,12 +13,13 @@ export function ScoreCard({ score, onClose }: Props) {
   const tierColor = TIER_COLORS[score.tier]
   const tierEmoji = TIER_EMOJI[score.tier]
   const sub = score.subscores || { consistency: 0, technical: 0, builderFocus: 0, community: 0 }
+  const fcFollowers = score.farcaster?.followers
 
-  const dimensions = [
-    { label: 'Consistency',   value: sub.consistency,  color: '#4a90d9' },
-    { label: 'Technical',     value: sub.technical,    color: '#00b4d8' },
-    { label: 'Builder focus', value: sub.builderFocus, color: '#8b5cf6' },
-    { label: 'Community',     value: sub.community,    color: '#34d399' },
+  const bars = [
+    { label: 'Consistency',   value: sub.consistency,  color: '#4a90d9', max: 25 },
+    { label: 'Technical',     value: sub.technical,    color: '#00b4d8', max: 25 },
+    { label: 'Builder focus', value: sub.builderFocus, color: '#8b5cf6', max: 25 },
+    { label: 'Community',     value: sub.community,    color: '#34d399', max: 25 },
   ]
 
   async function handleDownload() {
@@ -47,43 +48,79 @@ export function ScoreCard({ score, onClose }: Props) {
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank')
   }
 
-  const fcFollowers = score.farcaster?.followers
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
       onClick={e => { if (e.target === e.currentTarget) onClose?.() }}>
 
-      <div className="w-full max-w-2xl">
-        {/* Card — portrait-ish, optimized for mobile share */}
+      <div className="w-full max-w-4xl">
+        {/* Card — 16:9 ratio */}
         <div ref={cardRef}
           className="relative w-full overflow-hidden rounded-2xl border border-[#1e2d4a]"
           style={{
-            background: 'linear-gradient(160deg, #060c1a 0%, #0a1428 50%, #060c1a 100%)',
-            padding: '32px',
+            aspectRatio: '16/9',
+            background: 'linear-gradient(135deg, #060c1a 0%, #0a1428 60%, #060c1a 100%)',
           }}>
 
           {/* Background glow */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10"
-              style={{ background: tierColor, filter: 'blur(80px)', transform: 'translate(30%, -30%)' }} />
-            <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full opacity-5"
-              style={{ background: '#4a90d9', filter: 'blur(60px)', transform: 'translate(-30%, 30%)' }} />
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full opacity-10"
+              style={{ background: tierColor, filter: 'blur(80px)' }} />
+            <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-64 h-64 rounded-full opacity-5"
+              style={{ background: '#4a90d9', filter: 'blur(60px)' }} />
           </div>
 
-          {/* Content */}
-          <div className="relative z-10 flex flex-col gap-6">
+          {/* Top bar */}
+          <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-6 py-3 border-b border-white/5">
+            <div className="flex items-center gap-1.5">
+              {['#ff5f57','#febc2e','#28c840'].map((c, i) => (
+                <div key={i} className="w-2 h-2 rounded-full" style={{ backgroundColor: c }} />
+              ))}
+              <span className="text-white/20 text-[9px] font-mono ml-2 tracking-widest">blue-agent ~ builder-score</span>
+            </div>
+            <span className="text-white/20 text-[9px] font-mono tracking-widest">blueagent.xyz</span>
+          </div>
 
-            {/* ── Header ── */}
-            <div className="flex items-center justify-between">
-              {/* Left: avatar + handle */}
-              <div className="flex items-center gap-3">
+          {/* Main content */}
+          <div className="absolute inset-0 flex items-end px-10 pt-6 pb-6">
+
+            {/* LEFT 50% — big score number */}
+            <div style={{ width: '50%', display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-start', paddingLeft: '8px' }}>
+              <div className="font-bold font-mono"
+                style={{
+                  fontSize: '170px',
+                  color: '#ffffff',
+                  textShadow: `0 0 50px ${tierColor}99, 0 0 100px ${tierColor}44`,
+                  lineHeight: 1,
+                  letterSpacing: '-8px',
+                }}>
+                {score.overall}
+              </div>
+            </div>
+
+            {/* RIGHT 50% */}
+            <div style={{
+              width: '50%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              alignItems: 'flex-end',
+              paddingRight: '8px',
+              height: '100%',
+              paddingTop: '14px',
+              paddingBottom: '6px',
+            }}>
+
+              {/* ── User info ── */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexDirection: 'row-reverse' }}>
+                {/* Avatar */}
                 <div style={{
-                  width: '52px', height: '52px',
+                  width: '54px', height: '54px',
                   borderRadius: '50%',
                   overflow: 'hidden',
-                  border: `2px solid ${tierColor}55`,
+                  border: `2px solid ${tierColor}`,
                   background: '#1e2d4a',
                   flexShrink: 0,
+                  boxShadow: `0 0 12px ${tierColor}44`,
                 }}>
                   {score.avatar ? (
                     <img src={score.avatar} alt={score.handle}
@@ -91,113 +128,67 @@ export function ScoreCard({ score, onClose }: Props) {
                       crossOrigin="anonymous"
                       onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
                   ) : (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>🟦</div>
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px' }}>🟦</div>
                   )}
                 </div>
-                <div>
-                  <p style={{ fontSize: '16px', fontWeight: 700, color: '#fff', letterSpacing: '-0.3px' }}>
+                {/* Name + tier + FC */}
+                <div style={{ textAlign: 'right' }}>
+                  <p style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.5px' }}>
                     @{score.handle}
                   </p>
-                  <p style={{ fontSize: '11px', color: '#4a5568', marginTop: '2px', letterSpacing: '0.5px' }}>
-                    Base Builder
+                  <p style={{ fontSize: '10px', color: '#4a5568', marginTop: '2px', letterSpacing: '1px' }}>
+                    BASE BUILDER
                   </p>
+                  <div style={{
+                    display: 'inline-block',
+                    marginTop: '4px',
+                    fontSize: '10px',
+                    color: tierColor,
+                    border: `1px solid ${tierColor}`,
+                    borderRadius: '4px',
+                    padding: '1px 8px',
+                    background: `${tierColor}15`,
+                  }}>
+                    {tierEmoji} {score.tier}
+                  </div>
+                  {fcFollowers !== undefined && fcFollowers !== null && (
+                    <p style={{ fontSize: '9px', color: '#64748b', marginTop: '3px' }}>
+                      🟣 {fcFollowers.toLocaleString()} FC followers
+                    </p>
+                  )}
                 </div>
               </div>
 
-              {/* Right: tier badge */}
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-end',
-                gap: '4px',
-              }}>
-                <div style={{
-                  fontSize: '11px',
-                  color: tierColor,
-                  border: `1px solid ${tierColor}55`,
-                  borderRadius: '6px',
-                  padding: '3px 10px',
-                  background: `${tierColor}15`,
-                  fontWeight: 600,
-                  letterSpacing: '0.5px',
-                }}>
-                  {tierEmoji} {score.tier.toUpperCase()}
-                </div>
-                {fcFollowers !== undefined && fcFollowers !== null && (
-                  <p style={{ fontSize: '10px', color: '#64748b' }}>
-                    🟣 {fcFollowers.toLocaleString()} FC followers
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* ── Score ── */}
-            <div className="flex items-end gap-3">
-              <span style={{
-                fontSize: '96px',
-                fontWeight: 800,
-                color: '#ffffff',
-                lineHeight: 1,
-                letterSpacing: '-4px',
-                textShadow: `0 0 40px ${tierColor}66`,
-                fontFamily: 'monospace',
-              }}>
-                {score.overall}
-              </span>
-              <div style={{ paddingBottom: '12px' }}>
-                <p style={{ fontSize: '13px', color: '#4a5568', letterSpacing: '1px' }}>/100</p>
-                <p style={{ fontSize: '11px', color: tierColor, marginTop: '2px' }}>Builder Score</p>
-              </div>
-            </div>
-
-            {/* ── Divider ── */}
-            <div style={{ height: '1px', background: 'linear-gradient(90deg, #1e2d4a, transparent)' }} />
-
-            {/* ── 4 Dimensions ── */}
-            <div className="flex flex-col gap-3">
-              {dimensions.map(d => (
-                <div key={d.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '12px', color: '#64748b', letterSpacing: '0.5px' }}>
-                    {d.label}
-                  </span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    {/* Bar */}
-                    <div style={{ width: '80px', height: '3px', background: '#1e2d4a', borderRadius: '2px' }}>
-                      <div style={{
-                        width: `${(d.value / 25) * 100}%`,
-                        height: '100%',
-                        background: d.color,
-                        borderRadius: '2px',
-                      }} />
-                    </div>
-                    <span style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff', minWidth: '36px', textAlign: 'right', fontFamily: 'monospace' }}>
-                      {d.value}<span style={{ fontSize: '10px', color: '#4a5568', fontWeight: 400 }}>/25</span>
+              {/* ── Metrics — label left, value right, clean ── */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '100%' }}>
+                {bars.map(b => (
+                  <div key={b.label} style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '9px', color: '#4a5568', letterSpacing: '1.5px' }}>
+                      {b.label.toUpperCase()}
+                    </span>
+                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff', fontFamily: 'monospace' }}>
+                      {b.value}<span style={{ fontSize: '9px', color: '#4a5568', fontWeight: 400 }}>/25</span>
                     </span>
                   </div>
+                ))}
+              </div>
+
+              {/* ── Summary ── */}
+              {score.summary && (
+                <div style={{ borderTop: '1px solid rgba(74,144,217,0.15)', paddingTop: '8px', width: '100%' }}>
+                  <p style={{ fontSize: '9px', color: '#4a5568', lineHeight: 1.7, textAlign: 'right' }}>
+                    💡 {score.summary}
+                  </p>
                 </div>
-              ))}
+              )}
+
+              {/* ── Footer ── */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span style={{ fontSize: '9px', color: '#2d3748', letterSpacing: '1px' }}>🟦 BLOCKY STUDIO</span>
+                <span style={{ fontSize: '9px', color: '#2d3748' }}>t.me/blockyagent_bot</span>
+              </div>
+
             </div>
-
-            {/* ── Summary ── */}
-            {score.summary && (
-              <>
-                <div style={{ height: '1px', background: 'linear-gradient(90deg, #1e2d4a, transparent)' }} />
-                <p style={{ fontSize: '11px', color: '#64748b', lineHeight: 1.7 }}>
-                  💡 {score.summary}
-                </p>
-              </>
-            )}
-
-            {/* ── Footer ── */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '-8px' }}>
-              <span style={{ fontSize: '10px', color: '#2d3748', letterSpacing: '1px' }}>
-                🟦 BLOCKY STUDIO
-              </span>
-              <span style={{ fontSize: '10px', color: '#2d3748', letterSpacing: '0.5px' }}>
-                t.me/blockyagent_bot
-              </span>
-            </div>
-
           </div>
         </div>
 
