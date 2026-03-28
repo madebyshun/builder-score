@@ -34,7 +34,7 @@ AI scans X/Twitter profile + posts. No self-reporting. No gaming.
 
 ## Try it
 
-Telegram bot: [@Blockyagent_beta_bot](https://t.me/Blockyagent_beta_bot)
+Telegram bot: [@blockyagent_bot](https://t.me/blockyagent_bot)
 
 ```
 /score @yourhandle
